@@ -213,3 +213,6 @@ $ms-dot: 34px;
 // the checks table: six rows, the rule column wide
 .reveal .checks-table table { font-size: 21px; width: 100%; }
 .reveal .checks-table td:nth-child(n+3), .reveal .checks-table th:nth-child(n+3) { text-align: right; font-variant-numeric: tabular-nums; }
+
+// run-time slide, last click: the waiting gif in the bottom-right corner
+.reveal img.waiting { position: absolute; right: 0; bottom: 0; width: 300px; margin: 0; z-index: 10; box-shadow: 0 4px 16px rgba(0,0,0,.25); }

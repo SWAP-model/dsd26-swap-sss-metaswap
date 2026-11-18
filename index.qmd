@@ -216,6 +216,8 @@ digraph {
 When running SWAP-SSS with 16 threads, **MODFLOW 6** still ran serially and **took 88% of the run time** in the 7-day national benchmark as measured by the coupler
 :::
 
+![](media/still-waiting.gif){.fragment .waiting alt="Spanky from The Little Rascals, still waiting"}
+
 ## From the LHM to your own simulation
 
 <!-- the case files of the De Raam 2018 like-for-like pair, trimmed to their main keys -->
