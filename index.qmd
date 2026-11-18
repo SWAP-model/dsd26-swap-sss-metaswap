@@ -386,6 +386,9 @@ Two points to leave with the audience.
 - **Known faults:** the coupling at shallow groundwater, ponding without runoff, columns deeper than 100 m
 - **Still missing:** sprinkling, bypass flow, the LHM land use and crops, the link to surface water (Ribasim)
 :::
+
+<!-- last click: no new item, it clears the blur of the earlier ones -->
+<span class="fragment unblur-all"></span>
 :::
 
 ::: {.notes}
@@ -393,4 +396,29 @@ Speed: 2.0 min per model day in the 2015–2018 run, so 30 years (10,957 days) t
 coupler took about 47.8 of the 48.9 h (the SWAP columns 57 min). Links, no copies: the binaries, the coupler, the
 databases and the R scripts are still copies today. Pre-processing: what `metamod2swap.py` and `sss_init.py` do here,
 as primod does for MetaSWAP. Still missing: Ribasim as primod couples MetaSWAP.
+:::
+
+## Thank you {#thanks background-image="flanders-water-agriculture.webp" background-size="auto 100%" background-position="right center"}
+
+<!-- same layout as the title slide (partials/title-slide.html); styles shared in soil-column.scss -->
+```{=html}
+<p class="subtitle">Running SWAP-SSS-MF6 at national scale</p>
+<div class="quarto-title-authors">
+<div class="quarto-title-author"><div class="quarto-title-author-name"><span class="speaker">Mateusz Zawadzki</span></div></div>
+<div class="quarto-title-author"><div class="quarto-title-author-name">Robert Leander</div></div>
+<div class="quarto-title-author"><div class="quarto-title-author-name">Hendrik Kok</div></div>
+<div class="quarto-title-author"><div class="quarto-title-author-name">Ab Veldhuizen</div></div>
+<div class="quarto-title-author"><div class="quarto-title-author-name">Marius Heinen</div></div>
+<div class="quarto-title-author"><div class="quarto-title-author-name"><span class="speaker">Timo Kroon</span></div></div>
+</div>
+<p class="date">Slides: swap-model.github.io/dsd26-swap-sss-metaswap</p>
+<div class="title-logos">
+<img src="logos/vub-water-climate.png" alt="VUB Water and Climate Department" class="vub">
+<img src="logos/deltares.png" alt="Deltares" class="deltares">
+<img src="logos/wur.png" alt="Wageningen University &amp; Research" class="wur">
+</div>
+```
+
+::: {.notes}
+Thank you; questions welcome.
 :::

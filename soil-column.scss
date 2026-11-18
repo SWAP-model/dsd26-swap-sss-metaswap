@@ -82,30 +82,31 @@ html:not(.print-pdf) .reveal .slide-menu-button { position: absolute; }
 // title slide: text in the left half, the photograph fills the right
 // reveal.js centres a .center slide by setting an inline top and shrinking it to its text;
 // the title slide instead fills the 16:9 stage, so the logo row can sit at its foot
-#title-slide { text-align: left; top: 0 !important; height: 100%; box-sizing: border-box; padding-top: 190px; }
-#title-slide > * { max-width: 780px; }
-#title-slide .title { font-size: 2.3em; font-stretch: 78%; line-height: 1.02; letter-spacing: -0.01em; }
-#title-slide .subtitle { font-size: 1.05em; color: $gw; font-weight: 500; margin-top: 0.45em; }
-#title-slide .date { color: $muted; font-size: 0.75em; margin-top: 1.4em; }
+// the thank-you slide (#thanks) repeats the title slide's layout
+:is(#title-slide, #thanks) { text-align: left; top: 0 !important; height: 100%; box-sizing: border-box; padding-top: 190px; }
+:is(#title-slide, #thanks) > * { max-width: 780px; }
+:is(#title-slide .title, #thanks h2) { font-size: 2.3em; font-stretch: 78%; line-height: 1.02; letter-spacing: -0.01em; }
+:is(#title-slide, #thanks) .subtitle { font-size: 1.05em; color: $gw; font-weight: 500; margin-top: 0.45em; }
+:is(#title-slide, #thanks) .date { color: $muted; font-size: 0.75em; margin-top: 1.4em; }
 // authors on wrapped lines, comma-separated; speakers (a .speaker span) in ink and bold
-#title-slide .quarto-title-authors {
+:is(#title-slide, #thanks) .quarto-title-authors {
   display: flex; flex-wrap: wrap; justify-content: flex-start; padding: 0;
   margin-top: 2em; font-size: 0.8em; color: $muted; line-height: 1.45;
 }
-#title-slide .quarto-title-author { margin: 0; padding: 0; }
+:is(#title-slide, #thanks) .quarto-title-author { margin: 0; padding: 0; }
 // flex drops the whitespace Quarto leaves after each name, so the comma sits tight
-#title-slide .quarto-title-author-name { display: flex; margin: 0; }
-#title-slide .quarto-title-author:not(:last-child) .quarto-title-author-name::after { content: ",\00a0"; }
-#title-slide .speaker { color: $ink; font-weight: 650; }
+:is(#title-slide, #thanks) .quarto-title-author-name { display: flex; margin: 0; }
+:is(#title-slide, #thanks) .quarto-title-author:not(:last-child) .quarto-title-author-name::after { content: ",\00a0"; }
+:is(#title-slide, #thanks) .speaker { color: $ink; font-weight: 650; }
 // logo row at the foot of the text half; heights set per logo so the three read as equals
-#title-slide .title-logos {
+:is(#title-slide, #thanks) .title-logos {
   position: absolute; left: 0; bottom: 20px;
   display: flex; align-items: center; gap: 56px;
 }
-#title-slide .title-logos img { margin: 0; max-width: none; max-height: none; }
-#title-slide .title-logos .vub { height: 74px; }
-#title-slide .title-logos .deltares { height: 30px; }
-#title-slide .title-logos .wur { height: 38px; }
+:is(#title-slide, #thanks) .title-logos img { margin: 0; max-width: none; max-height: none; }
+:is(#title-slide, #thanks) .title-logos .vub { height: 74px; }
+:is(#title-slide, #thanks) .title-logos .deltares { height: 30px; }
+:is(#title-slide, #thanks) .title-logos .wur { height: 38px; }
 
 // introduction statements: a few full sentences, large, divided by thin rules; the slide's point follows as .conclusion
 .reveal .intro ul { list-style: none; margin: 0.4em 0 0; padding: 0; max-width: 1300px; }
@@ -227,3 +228,9 @@ $ms-dot: 34px;
 .reveal .steps-list .group-head:first-child { margin-top: 0.2em; }
 .reveal .steps-list ul { display: block; list-style: none; margin: 0; padding: 0; max-width: 1350px; }
 .reveal .steps-list li { font-size: 27px; line-height: 1.3; padding: 0.32em 0; border-bottom: 1px solid $rule; }
+
+// next steps: the item just shown is sharp, earlier ones blur; the last click (.unblur-all) clears them all
+.reveal .steps-list li.fragment.visible { transition: filter 0.3s ease, opacity 0.3s ease; }
+.reveal .steps-list li.fragment.visible:not(.current-fragment) { filter: blur(2.5px); opacity: 0.45; }
+.reveal .steps-list:has(.unblur-all.visible) li.fragment.visible { filter: none; opacity: 1; }
+.reveal .steps-list .unblur-all { display: none; }

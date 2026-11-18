@@ -22,7 +22,8 @@ Mateusz Zawadzki, Robert Leander, Hendrik Kok, Ab Veldhuizen, Marius Heinen, Tim
 | 12 | Head difference over all columns | by groundwater depth |
 | 13 | Comparison exercise: implausible values | three checks on the heads, both models |
 | 14 | Conclusions | two statements, one per click |
-| 15 | Next phase: SWAP-SSS as the LHM default | two groups, one item per click |
+| 15 | Next phase: SWAP-SSS as the LHM default | two groups, one item per click; earlier items blur, the last click clears them |
+| 16 | Thank you | the title slide's layout |
 
 ## Figures
 
