@@ -12,7 +12,7 @@ Mateusz Zawadzki, Robert Leander, Hendrik Kok, Ab Veldhuizen, Marius Heinen, Tim
 |---|---|---|
 | 1 | Title | |
 | 2–3 | Why move towards a SWAP-based framework? · Sequential Steady State (SSS): the idea | Ab Veldhuizen's introduction (his slides of 2026-11-17, text as written) |
-| 4 | Project timeline | four milestones, one per click |
+| 4 | Project milestones | four milestones, one per click |
 | 5 | System schematics | repositories and the VM |
 | 6 | Model comparison set-up | what is the same in both, then the table of differences |
 | 7 | Run time and resources | machine, table, conclusion |
@@ -20,9 +20,9 @@ Mateusz Zawadzki, Robert Leander, Hendrik Kok, Ab Veldhuizen, Marius Heinen, Tim
 | 9–10 | Running in the VM · Variables used in the comparison | |
 | 11 | Daily heads, 2015–2018 | animated map, press play |
 | 12 | Head difference over all columns | by groundwater depth |
-| 13 | Comparison exercise: implausible values | six checks, both models |
-| 14–17 | Ponding · head jumps · oscillation · storage change | one check per slide |
-| 18 | Next phase: SWAP-SSS as the LHM default | |
+| 13 | Comparison exercise: implausible values | three checks on the heads, both models |
+| 14 | Conclusions | two statements, one per click |
+| 15 | Next phase: SWAP-SSS as the LHM default | two groups, one item per click |
 
 ## Figures
 
@@ -35,8 +35,7 @@ on top of commit `78520b2`), copied here on 2026-11-18. Runs: `nl1518_sss_l4l` r
 |---|---|---|
 | `nl1518_heads_animation.md` | 11 | `04-2026-11-12-mz-heads-animation.py` (every third day on the map; carries plotly.js for the slides after it) |
 | `nl1518_head_diff_bands.md` | 12 | `04-2026-11-13-mz-head-diff-bands.py` |
-| `nl1518_implausible_summary.md` | 13 | `04-2026-11-13-mz-implausible-values.py` (2016–2018; 2015 is the warm-up year) |
-| `nl1518_implausible_{above_surface,jump,oscillation,balance}.md` | 14–17 | the same |
+| `nl1518_implausible_summary.md` | 13 | `04-2026-11-13-mz-implausible-values.py` (2016–2018; 2015 is the warm-up year); the notebook writes six checks, the deck keeps the first three (storage-coefficient, ET and storage-change rows removed by hand) |
 
 To update a figure: rerun its notebook there (`RUNS=nl1518`, the default) and copy the `.md` from
 `output/figures/` into `figures/`.

@@ -65,7 +65,7 @@ Model. I think that is a significant achievement. He will now show us what has b
 achieved, and which challenges remain. Mateusz, over to you.
 :::
 
-## Project timeline
+## Project milestones
 
 <!-- milestone track (.milestones in soil-column.scss): one .ms per milestone, each a fragment,
      so they appear one per click; the bold line is the milestone, the list what led to it -->
@@ -117,10 +117,10 @@ digraph {
   edge [color="#6b7480", arrowsize=0.6, fontname="Helvetica", fontsize=11, fontcolor="#4a5260"]
   subgraph cluster_gh {
     label="SWAP-model GitHub"; labeljust=l; labelloc=t; style="rounded,filled"; fillcolor="#edf3fb"; color="#9abdeb"
-    runs [label=<<b>swap-sss-runs</b><br/>case files, workflow,<br/>analysis, this deck>]
+    runs [label=<<b>swap-sss-runs</b><br/>case files, workflows>]
     vm   [label=<<b>swap-winvm</b><br/>the Windows VM>]
-    data [label=<<b>swap-sss-data</b><br/>data package: README,<br/>checksums, tools>]
-    src  [label=<<b>multiSWAP-SSS</b><br/>Fortran source, build>]
+    data [label=<<b>swap-sss-data</b><br/>checksums, tools>]
+    src  [label=<<b>multiSWAP-SSS</b><br/>Fortran source>]
     lhm  [label=<<b>lhm-workflows</b><br/>pre-processing, LHM data>]
   }
   subgraph cluster_dlt {
@@ -167,7 +167,7 @@ digraph {
 | | SWAP-SSS | MetaSWAP |
 |---|---|---|
 | unsaturated zone | SSS database (370 soil units) | LHM soil tables (LHM2018_v02vae) |
-| crops and ET | Penman-Monteith from the weather grids, SWAP crop files | LHM land use and crop factors, 5 WOFOST crops |
+| crops and ET | potential ET by Penman-Monteith, computed in SWAP from the KNMI weather grids; crop development from SWAP crop files per land use | potential ET = KNMI Makkink reference × LHM crop factor per land use and day; 5 crops by WOFOST |
 | coupling to MODFLOW | once per day, at the start-of-day head | at every MODFLOW iteration |
 | starting soil state | per column, steady with the long-term P − EV24 | root zone at pF 2.2 (as LHM) |
 | columns left uncoupled | 7 destabilizing cells (South Limburg, possibly a well field) | none |
@@ -346,86 +346,51 @@ Same checks and thresholds for both models, every land column, every day of 2016
 :::
 
 ::: {.notes}
-The storage-coefficient row mostly repeats the first: nearly all flags are a coefficient of 1 (open water) on a day
-the head is above the surface (97 % of MetaSWAP's; all of SWAP-SSS's in a sample of every 50th column). Nothing falls
-below 0.005: SWAP-SSS's u stops at 0.01. Neither model is ever flagged for ET. The storage-drift rule, 50 mm a year, catches real wet and
-dry years in both models; what differs is how far SWAP-SSS's storage swings.
+Three checks on the heads, the ones where the models part. Above the surface: SWAP-SSS's columns give no surface
+runoff in these runs, MetaSWAP's do; water that cannot infiltrate may stay as a head above the surface in SWAP-SSS (a
+likely cause, not yet checked column by column). Jumps fall on the same days in both models. Oscillation: four or more
+daily changes of at least 10 cm, up and down in turn, as when the daily exchange with MODFLOW does not settle.
+Three further checks were run and left out here: the storage coefficient (its flags are a coefficient of 1 on days
+with water above the surface, which is correct for open water), ET outside 0 to potential (never flagged) and a
+50 mm a year column storage change (flags real wet and dry years in both).
 :::
 
-## Ponding for over a week: 22 % of SWAP-SSS columns, almost none in MetaSWAP
+## Conclusions
 
-::: {.figure-slide .tall}
-{{< include figures/nl1518_implausible_above_surface.md >}}
-:::
-
-::: {.notes}
-SWAP-SSS's columns give no surface runoff in these runs; MetaSWAP's do (qrun). Water that cannot infiltrate may
-stay as a head above the surface in SWAP-SSS: a likely cause, not yet checked column by column. Most in the western
-polders, the north and the south-east; the share peaks after wet spells.
-:::
-
-## Head jumps over 0.5 m a day: same days in both, twice the columns in SWAP-SSS
-
-::: {.figure-slide .tall}
-{{< include figures/nl1518_implausible_jump.md >}}
-:::
-
-## Alternating heads: seven times as many column-days in SWAP-SSS
-
-::: {.figure-slide .tall}
-{{< include figures/nl1518_implausible_oscillation.md >}}
+::: {.incremental .statements}
+- We can run the full-scale LHM with a complete SWAP framework, thanks to the SSS prototype
+- Initial results are promising; more work is needed to fully integrate all components of the refurbished ecosystem
 :::
 
 ::: {.notes}
-Four or more daily changes of at least 10 cm, up and down in turn, as when the daily exchange with MODFLOW does not
-settle. 1.2 % of SWAP-SSS column-days against 0.16 % in MetaSWAP; the extra ones mostly in the south and the east.
+Two points to leave with the audience.
 :::
 
-## Storage change of more than 50 mm a year: both models, SWAP-SSS more often
+## Next phase: SWAP-SSS as the LHM default
 
-::: {.figure-slide .tall}
-{{< include figures/nl1518_implausible_balance.md >}}
+<!-- .steps-list (soil-column.scss): a small italic heading per group, then one short line per item, one per click -->
+::: {.steps-list}
+[The infrastructure around SWAP-SSS]{.group-head}
+
+::: {.incremental}
+- **One source, two platforms:** Windows and Linux builds from the same commit, the Linux one ready for a cluster
+- **Tests:** unit tests of the Fortran routines and small coupled reference cases, in transparent CI/CD
+- **Links, no copies:** every component a pinned release of its own repository
+- **Pre- and post-processing in iMOD Python / primod:** SWAP-SSS built from the LHM inputs, results in NetCDF
+- **Speed:** parallel MODFLOW 6 and restarts from a saved state; a 30-year national run now takes about 15 days
 :::
 
-## Next phase: SWAP-SSS as the LHM default {.smaller}
+[The model]{.group-head .fragment}
 
-:::: {.columns}
-
-::: {.column width="50%"}
-::: {style="font-size: 0.7em"}
-**The software around SWAP-SSS**
-
-- **One source, two platforms:** the build system is in place; Windows and Linux builds from the same commit,
-  both tested, the Linux one able to run on a cluster
-- **Links, no copies:** every component a pinned release or commit of its own repository; the binaries, the
-  coupler, the databases and the R scripts are still copies today
-- **Our fixes back to their sources:** the SSS solver and memory fixes, the threading, lazy loading and the
-  `swapmod` driver merged upstream, so that one version is maintained
-- **Tests:** unit tests of the Fortran routines; small coupled cases (De Raam) with reference results; both run
-  on every change
-- **Pre- and post-processing in iMOD Python / primod:** SWAP-SSS built from the LHM inputs as MetaSWAP is now
-  (what `metamod2swap.py` and `sss_init.py` do here); inputs and results in standard formats, NetCDF as in SWAP-MOD
-- **Speed and long runs:** MODFLOW 6 takes 88% of the time, so parallel MODFLOW 6 under the coupler, and
-  restart from a saved state; at today's 2.5 min per day a 30-year national run takes about 19 days
+::: {.incremental}
+- **Known faults:** the coupling at shallow groundwater, ponding without runoff, columns deeper than 100 m
+- **Still missing:** sprinkling, bypass flow, the LHM land use and crops, the link to surface water (Ribasim)
 :::
 :::
 
-::: {.column width="50%"}
-::: {style="font-size: 0.7em"}
-**The model**
-
-- **What "default" means, decided first:** acceptance tests against MetaSWAP and measurements (the checks of
-  this comparison), run on every release
-- **Known faults:** the coupling that does not settle at shallow groundwater; heads above the surface with no
-  runoff; columns deeper than the SSS tables' 100 m
-- **What the LHM uses and SWAP-SSS lacks:** sprinkling, bypass flow, the LHM land use and crops, the link to
-  surface water (Ribasim, as primod couples MetaSWAP)
-- **Parameters made by code:** the SSS database and the crop files built from the LHM soil map and land use,
-  not received as files
-- **Against measurements, not only MetaSWAP:** heads in monitoring wells, evapotranspiration, discharge; the
-  LHM's MODFLOW parameters were calibrated with MetaSWAP and need checking with SWAP-SSS
-- **Ownership:** who maintains each part, how releases are made, documentation for LHM users
+::: {.notes}
+Speed: 2.0 min per model day in the 2015–2018 run, so 30 years (10,957 days) take about 15 days; MODFLOW 6 and the
+coupler took about 47.8 of the 48.9 h (the SWAP columns 57 min). Links, no copies: the binaries, the coupler, the
+databases and the R scripts are still copies today. Pre-processing: what `metamod2swap.py` and `sss_init.py` do here,
+as primod does for MetaSWAP. Still missing: Ribasim as primod couples MetaSWAP.
 :::
-:::
-
-::::
