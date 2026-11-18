@@ -104,7 +104,7 @@ html:not(.print-pdf) .reveal .slide-menu-button { position: absolute; }
   display: flex; align-items: center; gap: 56px;
 }
 :is(#title-slide, #thanks) .title-logos img { margin: 0; max-width: none; max-height: none; }
-:is(#title-slide, #thanks) .title-logos .vub { height: 74px; }
+:is(#title-slide, #thanks) .title-logos .vub { height: 67px; }
 :is(#title-slide, #thanks) .title-logos .deltares { height: 30px; }
 :is(#title-slide, #thanks) .title-logos .wur { height: 38px; }
 

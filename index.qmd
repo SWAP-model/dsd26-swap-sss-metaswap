@@ -12,9 +12,9 @@ author:
   - name: "[Timo Kroon]{.speaker}"
 # logo row at the foot of the title slide (partials/title-slide.html)
 title-logos:
-  - {src: logos/vub-water-climate.png, alt: "VUB Water and Climate Department", class: vub}
   - {src: logos/deltares.png, alt: "Deltares", class: deltares}
   - {src: logos/wur.png, alt: "Wageningen University & Research", class: wur}
+  - {src: logos/vub-water-climate.png, alt: "VUB Water and Climate Department", class: vub}
 resources: [logos/*.png]
 title-slide-attributes:
   data-background-image: flanders-water-agriculture.webp
@@ -413,9 +413,9 @@ as primod does for MetaSWAP. Still missing: Ribasim as primod couples MetaSWAP.
 </div>
 <p class="date">Slides: swap-model.github.io/dsd26-swap-sss-metaswap</p>
 <div class="title-logos">
-<img src="logos/vub-water-climate.png" alt="VUB Water and Climate Department" class="vub">
 <img src="logos/deltares.png" alt="Deltares" class="deltares">
 <img src="logos/wur.png" alt="Wageningen University &amp; Research" class="wur">
+<img src="logos/vub-water-climate.png" alt="VUB Water and Climate Department" class="vub">
 </div>
 ```
 
