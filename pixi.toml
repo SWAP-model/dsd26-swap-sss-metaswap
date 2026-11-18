@@ -1,0 +1,20 @@
+# Pins the deck toolchain: the exact builds are recorded in pixi.lock.
+#   pixi run render      render index.qmd to _site/index.html (self-contained HTML), as the GitHub Pages workflow does
+#   pixi run preview     live reload at localhost:4303/index.html (tools/live.py)
+[workspace]
+name = "dsd26-swap-sss-metaswap"
+channels = ["conda-forge"]
+platforms = ["linux-64", "osx-arm64", "win-64"]
+
+[dependencies]
+quarto = "==1.9.38"
+python = "3.12.*"
+
+[tasks]
+render = "quarto render"
+
+# One serialized live preview on a fixed port, so the URL is the same locally and through ssh port forwarding:
+# re-renders on a change to the deck, its theme, partials, logos or figures, one render at a time, and reloads the page
+[tasks.preview]
+args = [{ arg = "file", default = "index.qmd" }, { arg = "port", default = "4303" }]
+cmd = "python tools/live.py {{ file }} {{ port }}"

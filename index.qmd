@@ -1,0 +1,429 @@
+---
+title: "Running SWAP-SSS-MF6 at national scale"
+subtitle: "Multi-year comparison, 2015–2018"
+date: 2026-11-19
+# speakers carry the .speaker span, styled in soil-column.scss
+author:
+  - name: "[Mateusz Zawadzki]{.speaker}"
+  - name: Robert Leander
+  - name: Hendrik Kok
+  - name: Ab Veldhuizen
+  - name: Marius Heinen
+  - name: "[Timo Kroon]{.speaker}"
+# logo row at the foot of the title slide (partials/title-slide.html)
+title-logos:
+  - {src: logos/vub-water-climate.png, alt: "VUB Water and Climate Department", class: vub}
+  - {src: logos/deltares.png, alt: "Deltares", class: deltares}
+  - {src: logos/wur.png, alt: "Wageningen University & Research", class: wur}
+resources: [logos/*.png]
+title-slide-attributes:
+  data-background-image: flanders-water-agriculture.webp
+  data-background-size: auto 100%
+  data-background-position: right center
+format:
+  revealjs:
+    theme: [default, soil-column.scss]
+    template-partials: [partials/title-slide.html]
+    width: 1600
+    height: 900
+    margin: 0.06
+    center: false
+---
+
+## Why move towards a SWAP-based framework?
+
+<!-- this and the next: the two introduction slides of Ab Veldhuizen (SSS_Introduction_DSS_before_Mateusz(1).pptx,
+     2026-11-17), text as written; the last statement of each as the slide's conclusion -->
+
+::: {.intro}
+- For years, WENR and Deltares have been working towards replacing MetaSWAP in national and regional hydrological
+  modelling.
+- SWAP offers a comprehensive framework for soil water, vegetation and evapotranspiration processes.
+- However, solving the transient Richards equation for every soil column is computationally demanding.
+:::
+
+::: {.conclusion}
+The challenge: a common, maintainable process framework with feasible runtimes at national scale.
+:::
+
+## Sequential Steady State (SSS): the idea
+
+::: {.intro}
+- A prototype developed by Deltares, inspired by the efficient approach used in MetaSWAP.
+- Replace the transient Richards solver with a sequential steady-state approximation of soil water flow.
+- Retain the surrounding SWAP framework, including shared process descriptions such as evapotranspiration.
+:::
+
+::: {.conclusion}
+Aim: SWAP-based consistency and maintainability, with the speed required for large-scale SWAP–MODFLOW simulations.
+:::
+
+::: {.notes}
+Of course, this is still a prototype, and there are questions about accuracy and the applicability of the
+approximation. But Mateusz has already managed to run a multi-year application with the Netherlands Hydrological
+Model. I think that is a significant achievement. He will now show us what has been implemented, what has been
+achieved, and which challenges remain. Mateusz, over to you.
+:::
+
+## Project timeline
+
+<!-- milestone track (.milestones in soil-column.scss): one .ms per milestone, each a fragment,
+     so they appear one per click; the bold line is the milestone, the list what led to it -->
+::: {.milestones}
+::: {.ms .fragment}
+**The first test case runs in a Windows VM**
+
+- created data package and split code into separate repositories
+- updated the iMOD Coupler `swapmod` branch
+- added Meson build for Linux and Windows
+- Run the model for the De Raam catchment
+:::
+
+::: {.ms .fragment}
+**First runs built from the LHM data**
+
+- pre-processing built on the LHM workflows
+- run of De Raam, Krimpenerwaard, and the whole country model for 7 days
+- first bugs fixed: out-of-bounds reads, the SSS solver's start-up, memory at national size
+:::
+
+::: {.ms .fragment}
+**First national run of a full year, 2018**
+
+- multi-threading fixed for SWAP-SSS
+- improved memory management, lazy loading of the SSS database
+- seven deep columns which destabilised the model uncoupled
+:::
+
+::: {.ms .fragment}
+**Both models side by side, 2015–2018**
+
+- the results are close but not identical (as they should be), and it is a good start!
+:::
+:::
+
+## System schematics
+
+<!-- .diagram: centred, sized to the slide (soil-column.scss); Helvetica in the dot source gives
+     Graphviz the metrics of the font the browser draws (Arial / Liberation Sans) -->
+::: {.diagram}
+```{dot}
+//| fig-width: 12
+//| fig-height: 6.5
+digraph {
+  graph [rankdir=LR, bgcolor=transparent, fontname="Helvetica", fontsize=13, nodesep=0.3, ranksep=0.9]
+  node [shape=box, style="rounded,filled", fillcolor=white, color="#8a94a3", penwidth=1.2,
+        fontname="Helvetica", fontsize=13, fontcolor="#222222", margin="0.14,0.07"]
+  edge [color="#6b7480", arrowsize=0.6, fontname="Helvetica", fontsize=11, fontcolor="#4a5260"]
+  subgraph cluster_gh {
+    label="SWAP-model GitHub"; labeljust=l; labelloc=t; style="rounded,filled"; fillcolor="#edf3fb"; color="#9abdeb"
+    runs [label=<<b>swap-sss-runs</b><br/>case files, workflow,<br/>analysis, this deck>]
+    vm   [label=<<b>swap-winvm</b><br/>the Windows VM>]
+    data [label=<<b>swap-sss-data</b><br/>data package: README,<br/>checksums, tools>]
+    src  [label=<<b>multiSWAP-SSS</b><br/>Fortran source, build>]
+    lhm  [label=<<b>lhm-workflows</b><br/>pre-processing, LHM data>]
+  }
+  subgraph cluster_dlt {
+    label="Deltares GitHub (forks)"; labeljust=l; labelloc=t; style="rounded,filled"; fillcolor="#f3f5f6"; color="#b9c0c5"
+    sss  [label=<<b>UZ_SequentialSteadyState</b><br/>SSS solver>]
+    cpl  [label=<<b>imod_coupler</b> <br/>coupler, swapmod>]
+  }
+  files [label=<data files, 355 GB<br/>git-ignored, checksummed>, shape=cylinder, style=filled, fillcolor="#f4f4f4"]
+  // one rule: an arrow points to where something goes; everything goes into the VM, where the models run
+  data -> vm   [label=""]
+  lhm  -> vm   [label=""]
+  src  -> vm   [label=""]
+  cpl  -> vm   [label=""]
+  sss  -> src  [label=""]
+  runs -> vm   [label="", style=bold]
+  files -> data [dir=none, style=dotted]
+}
+```
+:::
+
+## Model comparison set-up
+
+<!-- ruled list (.ruled in soil-column.scss): items between thin rules, one per click; the
+     table of differences comes last -->
+[Same in both]{.set-label}
+
+::: {.ruled}
+::: {.item .fragment}
+**MODFLOW 6 model of LHM:** 250 m grid, 15 layers; one land column per cell
+:::
+
+::: {.item .fragment}
+**KNMI precipitation grids**
+:::
+
+::: {.item .fragment}
+**Switched off:** sprinkling, the 13 m cut of the column (`dbot`)
+:::
+:::
+
+::: {.fragment}
+[Different]{.set-label}
+
+| | SWAP-SSS | MetaSWAP |
+|---|---|---|
+| unsaturated zone | SSS database (370 soil units) | LHM soil tables (LHM2018_v02vae) |
+| crops and ET | Penman-Monteith from the weather grids, SWAP crop files | LHM land use and crop factors, 5 WOFOST crops |
+| coupling to MODFLOW | once per day, at the start-of-day head | at every MODFLOW iteration |
+| starting soil state | per column, steady with the long-term P − EV24 | root zone at pF 2.2 (as LHM) |
+| columns left uncoupled | 7 destabilizing cells (South Limburg, possibly a well field) | none |
+
+: {tbl-colwidths="[24,38,38]"}
+:::
+
+## Run time and resources
+
+<!-- machine figure, then the table, then the conclusion: one per click (.runtime in soil-column.scss) -->
+:::: {.runtime}
+::: {.fragment}
+```{=html}
+<div class="machine">
+  <div class="host">
+    <p class="m-title">Workstation</p>
+    <p class="m-spec">Intel i9-14900, 128 GB RAM</p>
+    <div class="vm">
+      <p class="m-title">Windows Server 2022 virtual machine</p>
+      <p class="m-spec">QEMU/KVM, 92 GB RAM, 18 CPUs</p>
+      <div class="cores" aria-label="8 performance cores with 2 threads each, 2 efficiency cores">
+        <span class="p"><i></i><i></i></span><span class="p"><i></i><i></i></span><span class="p"><i></i><i></i></span><span class="p"><i></i><i></i></span><span class="p"><i></i><i></i></span><span class="p"><i></i><i></i></span><span class="p"><i></i><i></i></span><span class="p"><i></i><i></i></span><span class="e"><i></i></span><span class="e"><i></i></span>
+      </div>
+      <p class="m-legend">8 performance cores, 2 threads each; 2 efficiency cores</p>
+      <div class="models"><span>SWAP-SSS-MF6</span><span>MetaSWAP-MF6</span></div>
+      <p class="m-legend">both models side by side</p>
+    </div>
+  </div>
+</div>
+```
+:::
+
+::: {.fragment}
+| | SWAP-SSS-MF6 | MetaSWAP-MF6 |
+|---|---|---|
+| threads | 16 for the SWAP columns (OpenMP); MODFLOW 6 serial | 1: MetaSWAP and MODFLOW 6 serial |
+| memory, peak | 48.5 GB | 34.6 GB |
+| start-up, until day 1 | 5.7 min | 9.0 min |
+| 2015–2018, 1461 days | 48.9 h (2.01 min per day) | 48.0 h (1.97 min per day) |
+
+: {tbl-colwidths="[24,38,38]"}
+:::
+::::
+
+::: {.fragment .conclusion}
+When running SWAP-SSS with 16 threads, **MODFLOW 6** still ran serially and **took 88% of the run time** in the 7-day national benchmark as measured by the coupler
+:::
+
+## From the LHM to your own simulation
+
+<!-- the case files of the De Raam 2018 like-for-like pair, trimmed to their main keys -->
+:::: {.case-slide}
+::: {.case-file}
+```{.toml code-line-numbers="false"}
+# workflow/cases/ic18_raam_msw_l4l.toml: MetaSWAP-MF6 from the LHM
+name  = "ic18_raam_msw_l4l"
+# leave out box for the whole country
+box   = {xmin=151250.0, xmax=201250.0, ymin=391250.0, ymax=441250.0}
+start = "2018-01-01"
+days  = 365
+metaswap_sprinkling = false          # like-for-like switches
+metaswap_bypass     = false
+
+# workflow/cases/ic18_raam_sss_l4l.toml: SWAP-SSS-MF6, converted
+name    = "ic18_raam_sss_l4l"
+from    = "case:ic18_raam_msw_l4l"
+model   = "multiswap"
+mode    = "sss"
+n_iters = 1                          # one exchange per day
+```
+:::
+
+::: {.case-points}
+- **LHM → MetaSWAP-MF6:** built with `lhm-workflows`, clipped to the case's box and period
+- **MetaSWAP-MF6 → SWAP-SSS-MF6:** converted by a Python script; the MODFLOW model stays the same
+- **Tested on De Raam:** the case built from the LHM against the first prototype as delivered
+:::
+::::
+
+## Running in the VM, getting the results out {.smaller}
+
+```{dot}
+//| fig-width: 10.5
+//| fig-height: 3
+digraph {
+  graph [rankdir=LR, bgcolor=transparent, fontname="Source Sans Pro", fontsize=13, nodesep=0.3, ranksep=0.45]
+  node [shape=box, style="rounded,filled", fillcolor=white, color="#8a94a3", penwidth=1.2,
+        fontname="Source Sans Pro", fontsize=13, fontcolor="#222222", margin="0.14,0.07"]
+  edge [color="#6b7480", arrowsize=0.6, fontname="Source Sans Pro", fontsize=11, fontcolor="#4a5260"]
+  subgraph cluster_vm {
+    label="Windows Server VM"; labeljust=l; style="rounded,filled"; fillcolor="#edf3fb"; color="#9abdeb"
+    build [label=<<b>build</b><br/>the model, C:\\lhm\\models>]
+    run   [label=<<b>run</b> on a copy<br/>imodc.exe: MetaSWAP<br/>swapmod: SWAP-SSS>]
+    exp   [label=<<b>export</b><br/>heads, budgets, land-model<br/>output, logs, the model>]
+  }
+  subgraph cluster_host {
+    label="Linux workstation"; labeljust=r; style="rounded,filled"; fillcolor="#f4f4f4"; color="#b0b0b0"
+    case  [label=<<b>case.py</b><br/>starts each step,<br/>follows its log>]
+    share [label=<results share<br/>results/lhm/CASE/RUN>, shape=cylinder]
+    post  [label=<<b>stats.py, convergence.py</b><br/>checks, daily statistics>]
+    nc    [label=<<b>netcdf_results.py,<br/>compare_runs.py</b><br/>NetCDF, 250 m, EPSG:28992>]
+    fig   [label=<QGIS projects,<br/>Plotly figures, this deck>]
+  }
+  case -> build [label=" ssh"]
+  build -> run -> exp
+  exp -> share [label=" copy"]
+  run -> share [label=" memory, progress\n every 30 s", style=dashed]
+  share -> post -> nc -> fig
+  case -> share [style=invis, weight=10]
+}
+```
+
+- Each step starts **detached** inside the VM, so a dropped ssh connection does not stop it; its log and exit code
+  are written straight to the host
+- The data package is mounted **read-only**; a run works on a copy of the built model, which is exported with the
+  results (the exact inputs of every run)
+- The VM copy of a run is deleted only once every exported file has the same size on the host
+- A watchdog on the host records the VM's state if it hangs (it did four times in long runs, before November)
+
+## Variables used in the comparison {.smaller}
+
+| | SWAP-SSS | MetaSWAP |
+|---|---|---|
+| **exchange with MODFLOW** | | |
+| layer-1 head | `gwl` | `Hgwmodf` |
+| storage coefficient | `u` | `sc1` |
+| recharge package flux | `qu` | `qsim` |
+| total flux at the column bottom | `qbot` | `qmodf` |
+| **water balance** | | |
+| precipitation | `precip` | `Pm` |
+| actual evapotranspiration | `etact` | `ETact` |
+| of which transpiration, soil evaporation, interception | `tact`, `eact`, `intcpt` | `Tact`, `Ebs`, `Eic` |
+| potential transpiration | `tpot` | `Tpot` |
+| runoff | `runoff` | `qrun` (+ `qdr`) |
+| storage change of the column | from the balance | `decStot` |
+
+: {tbl-colwidths="[46,27,27]"}
+
+## Daily heads, 2015–2018: together at shallow groundwater, apart where it is deep
+
+<!-- analysis/04-2026-11-12-mz-heads-animation.py (RUNS=nl1518): every third day on the map, the series daily;
+     each location is the cell nearest its region's median difference -->
+::: {.figure-slide}
+{{< include figures/nl1518_heads_animation.md >}}
+:::
+
+::: {.notes}
+Blue: SWAP-SSS higher. Press play: the map runs every third day of 2015–2018. Where groundwater is within a few
+metres the two heads follow each other day by day (Leerdam, Zeeland, Peel, Drenthe, Groningen). Under the Veluwe,
+20 m deep, SWAP-SSS rises while MetaSWAP falls: 2 m apart on average.
+:::
+
+## Deeper than 3 m SWAP-SSS ends higher, and the spread keeps growing
+
+<!-- analysis/04-2026-11-13-mz-head-diff-bands.py (RUNS=nl1518); numbers from output/tables/nl1518_head_diff_bands.csv -->
+::: {.figure-slide}
+{{< include figures/nl1518_head_diff_bands.md >}}
+:::
+
+::: {.notes}
+Daily head difference over all land columns, by MetaSWAP's mean depth. Shallower than 3 m (88 % of columns): median
+0, half of the columns within 6 cm in 2016–2018. Deeper than 3 m (12 %): SWAP-SSS rises about 0.5 m in the first
+year and stays higher (median +0.4 m in 2016–2018); the 95th percentile keeps growing, 0.9 m mid-2015 to 4.2 m at
+the end of 2018. The deep columns have not settled after four years.
+:::
+
+## Comparison exercise: implausible values
+
+Same checks and thresholds for both models, every land column, every day of 2016–2018 (2015 is the warm-up year)
+
+<!-- analysis/04-2026-11-13-mz-implausible-values.py (RUNS=nl1518) writes the table -->
+::: {.checks-table}
+{{< include figures/nl1518_implausible_summary.md >}}
+:::
+
+::: {.notes}
+The storage-coefficient row mostly repeats the first: nearly all flags are a coefficient of 1 (open water) on a day
+the head is above the surface (97 % of MetaSWAP's; all of SWAP-SSS's in a sample of every 50th column). Nothing falls
+below 0.005: SWAP-SSS's u stops at 0.01. Neither model is ever flagged for ET. The storage-drift rule, 50 mm a year, catches real wet and
+dry years in both models; what differs is how far SWAP-SSS's storage swings.
+:::
+
+## Ponding for over a week: 22 % of SWAP-SSS columns, almost none in MetaSWAP
+
+::: {.figure-slide .tall}
+{{< include figures/nl1518_implausible_above_surface.md >}}
+:::
+
+::: {.notes}
+SWAP-SSS's columns give no surface runoff in these runs; MetaSWAP's do (qrun). Water that cannot infiltrate may
+stay as a head above the surface in SWAP-SSS: a likely cause, not yet checked column by column. Most in the western
+polders, the north and the south-east; the share peaks after wet spells.
+:::
+
+## Head jumps over 0.5 m a day: same days in both, twice the columns in SWAP-SSS
+
+::: {.figure-slide .tall}
+{{< include figures/nl1518_implausible_jump.md >}}
+:::
+
+## Alternating heads: seven times as many column-days in SWAP-SSS
+
+::: {.figure-slide .tall}
+{{< include figures/nl1518_implausible_oscillation.md >}}
+:::
+
+::: {.notes}
+Four or more daily changes of at least 10 cm, up and down in turn, as when the daily exchange with MODFLOW does not
+settle. 1.2 % of SWAP-SSS column-days against 0.16 % in MetaSWAP; the extra ones mostly in the south and the east.
+:::
+
+## Storage change of more than 50 mm a year: both models, SWAP-SSS more often
+
+::: {.figure-slide .tall}
+{{< include figures/nl1518_implausible_balance.md >}}
+:::
+
+## Next phase: SWAP-SSS as the LHM default {.smaller}
+
+:::: {.columns}
+
+::: {.column width="50%"}
+::: {style="font-size: 0.7em"}
+**The software around SWAP-SSS**
+
+- **One source, two platforms:** the build system is in place; Windows and Linux builds from the same commit,
+  both tested, the Linux one able to run on a cluster
+- **Links, no copies:** every component a pinned release or commit of its own repository; the binaries, the
+  coupler, the databases and the R scripts are still copies today
+- **Our fixes back to their sources:** the SSS solver and memory fixes, the threading, lazy loading and the
+  `swapmod` driver merged upstream, so that one version is maintained
+- **Tests:** unit tests of the Fortran routines; small coupled cases (De Raam) with reference results; both run
+  on every change
+- **Pre- and post-processing in iMOD Python / primod:** SWAP-SSS built from the LHM inputs as MetaSWAP is now
+  (what `metamod2swap.py` and `sss_init.py` do here); inputs and results in standard formats, NetCDF as in SWAP-MOD
+- **Speed and long runs:** MODFLOW 6 takes 88% of the time, so parallel MODFLOW 6 under the coupler, and
+  restart from a saved state; at today's 2.5 min per day a 30-year national run takes about 19 days
+:::
+:::
+
+::: {.column width="50%"}
+::: {style="font-size: 0.7em"}
+**The model**
+
+- **What "default" means, decided first:** acceptance tests against MetaSWAP and measurements (the checks of
+  this comparison), run on every release
+- **Known faults:** the coupling that does not settle at shallow groundwater; heads above the surface with no
+  runoff; columns deeper than the SSS tables' 100 m
+- **What the LHM uses and SWAP-SSS lacks:** sprinkling, bypass flow, the LHM land use and crops, the link to
+  surface water (Ribasim, as primod couples MetaSWAP)
+- **Parameters made by code:** the SSS database and the crop files built from the LHM soil map and land use,
+  not received as files
+- **Against measurements, not only MetaSWAP:** heads in monitoring wells, evapotranspiration, discharge; the
+  LHM's MODFLOW parameters were calibrated with MetaSWAP and need checking with SWAP-SSS
+- **Ownership:** who maintains each part, how releases are made, documentation for LHM users
+:::
+:::
+
+::::

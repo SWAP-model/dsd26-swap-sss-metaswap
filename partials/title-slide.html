@@ -1,0 +1,27 @@
+<section id="$idprefix$title-slide"$for(title-slide-attributes/pairs)$ $it.key$="$it.value$"$endfor$ class="quarto-title-block">
+  <h1 class="title">$title$</h1>
+$if(subtitle)$
+  <p class="subtitle">$subtitle$</p>
+$endif$
+
+<div class="quarto-title-authors">
+$for(by-author)$
+<div class="quarto-title-author">
+<div class="quarto-title-author-name">
+$if(by-author.name.literal)$$by-author.name.literal$$endif$
+</div>
+</div>
+$endfor$
+</div>
+
+$if(date)$
+  <p class="date">$date$</p>
+$endif$
+$if(title-logos)$
+  <div class="title-logos">
+$for(title-logos)$
+    <img src="$it.src$" alt="$it.alt$" class="$it.class$">
+$endfor$
+  </div>
+$endif$
+</section>

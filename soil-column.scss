@@ -1,0 +1,215 @@
+/*-- scss:defaults --*/
+// Soil column: white slides with one signature, a layered strip down the left edge
+// (sky, root zone, unsaturated zone, clay, groundwater), the SWAP column the decks are about.
+// Groundwater blue is the only accent; the other layer colours appear only in the strip.
+// Use with width 1600, height 900 (16:9); the title slide takes the photograph as a
+// right-aligned background (title-slide-attributes in the deck's front matter).
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,400..700&family=Red+Hat+Mono:wght@400;600&display=swap');
+
+$ink: #1f2427;
+$muted: #626a70;
+$rule: #dfe3e6;
+$code-bg: #f3f5f6;
+$sky: #bcd5e6;
+$root: #5d8a34;
+$unsat: #c49a5c;
+$clay: #6e4b31;
+$gw: #275b83;
+
+$body-bg: #ffffff;
+$body-color: $ink;
+$link-color: $gw;
+$font-family-sans-serif: "Archivo", "Source Sans Pro", sans-serif;
+$font-family-monospace: "Red Hat Mono", "Source Code Pro", monospace;
+$presentation-heading-font: $font-family-sans-serif;
+$presentation-heading-color: $ink;
+$presentation-heading-font-weight: 700;
+$presentation-heading-letter-spacing: -0.005em;
+$presentation-font-size-root: 32px;
+$presentation-h2-font-size: 1.45em;
+$presentation-line-height: 1.3;
+$code-block-bg: $code-bg;
+$code-block-border-color: $gw;
+$code-color: $gw;
+
+/*-- scss:rules --*/
+// a 16:9 stage, centred and letterboxed, whatever the window's shape; reveal.js sizes the
+// slides from .reveal, so backgrounds, the strip and the controls all stay inside it
+// (left alone in print-pdf mode, where reveal lays out its own pages)
+html:not(.print-pdf) body.reveal-viewport { background: #2b3034; }
+html:not(.print-pdf) .reveal {
+  position: absolute; inset: 0; margin: auto;
+  width: min(100vw, calc(100vh * 16 / 9));
+  height: min(100vh, calc(100vw * 9 / 16));
+  background: $body-bg;
+}
+html:not(.print-pdf) .reveal .slide-menu-button { position: absolute; }
+
+// the column: pinned to the stage, so it stays put while slides change
+.reveal::before {
+  content: ""; position: absolute; z-index: 10; left: 0; top: 0; bottom: 0; width: 16px;
+  background: linear-gradient(to bottom,
+    $sky 0 14%, $root 14% 24%, $unsat 24% 56%, $clay 56% 68%, $gw 68% 100%);
+}
+
+.reveal .slides { text-align: left; }
+.reveal h2 { font-stretch: 82%; margin-bottom: 0.7em; }
+
+.reveal ul li::marker { color: $gw; }
+.reveal strong { font-weight: 650; }
+
+// tables: no stripes, one strong rule under the header, row labels muted
+.reveal table { margin-left: 0; border-collapse: collapse; font-size: 0.78em; }
+.reveal table th { font-weight: 650; font-stretch: 85%; text-align: left; border-bottom: 2px solid $ink; }
+.reveal table td { border-bottom: 1px solid $rule; vertical-align: top; }
+.reveal table td:first-child { color: $muted; }
+
+// code: light panel, groundwater-blue left edge; selectors strong enough to beat the
+// default highlight theme
+.reveal div.sourceCode, .reveal pre.sourceCode {
+  background: $code-bg; border: none; border-left: 4px solid $gw; border-radius: 0 4px 4px 0;
+}
+.reveal pre { font-size: 0.6em; line-height: 1.45; width: 100%; }
+.reveal div.sourceCode pre code, .reveal pre code { color: $ink; background: transparent; padding: 0.55em 0.8em; }
+.reveal div.sourceCode pre code span { color: inherit; }
+.reveal div.sourceCode pre code span.co { color: #7a8288; font-style: normal; }
+.reveal div.sourceCode pre code span.kw, .reveal div.sourceCode pre code span.bu,
+.reveal div.sourceCode pre code span.fu { color: $gw; font-weight: 600; }
+.reveal div.sourceCode pre code span.st, .reveal div.sourceCode pre code span.dv,
+.reveal div.sourceCode pre code span.fl { color: #4f7a2a; }
+.reveal :not(pre) > code { color: $gw; background: $code-bg; padding: 0 0.15em; border-radius: 3px; }
+
+// title slide: text in the left half, the photograph fills the right
+// reveal.js centres a .center slide by setting an inline top and shrinking it to its text;
+// the title slide instead fills the 16:9 stage, so the logo row can sit at its foot
+#title-slide { text-align: left; top: 0 !important; height: 100%; box-sizing: border-box; padding-top: 190px; }
+#title-slide > * { max-width: 780px; }
+#title-slide .title { font-size: 2.3em; font-stretch: 78%; line-height: 1.02; letter-spacing: -0.01em; }
+#title-slide .subtitle { font-size: 1.05em; color: $gw; font-weight: 500; margin-top: 0.45em; }
+#title-slide .date { color: $muted; font-size: 0.75em; margin-top: 1.4em; }
+// authors on wrapped lines, comma-separated; speakers (a .speaker span) in ink and bold
+#title-slide .quarto-title-authors {
+  display: flex; flex-wrap: wrap; justify-content: flex-start; padding: 0;
+  margin-top: 2em; font-size: 0.8em; color: $muted; line-height: 1.45;
+}
+#title-slide .quarto-title-author { margin: 0; padding: 0; }
+// flex drops the whitespace Quarto leaves after each name, so the comma sits tight
+#title-slide .quarto-title-author-name { display: flex; margin: 0; }
+#title-slide .quarto-title-author:not(:last-child) .quarto-title-author-name::after { content: ",\00a0"; }
+#title-slide .speaker { color: $ink; font-weight: 650; }
+// logo row at the foot of the text half; heights set per logo so the three read as equals
+#title-slide .title-logos {
+  position: absolute; left: 0; bottom: 20px;
+  display: flex; align-items: center; gap: 56px;
+}
+#title-slide .title-logos img { margin: 0; max-width: none; max-height: none; }
+#title-slide .title-logos .vub { height: 74px; }
+#title-slide .title-logos .deltares { height: 30px; }
+#title-slide .title-logos .wur { height: 38px; }
+
+// introduction statements: a few full sentences, large, divided by thin rules; the slide's point follows as .conclusion
+.reveal .intro ul { list-style: none; margin: 0.4em 0 0; padding: 0; max-width: 1300px; }
+.reveal .intro li { font-size: 34px; line-height: 1.32; padding: 0.55em 0; border-bottom: 1px solid $rule; }
+.reveal .intro li:first-child { padding-top: 0; }
+.reveal .intro + .conclusion { margin-top: 1.4em; font-size: 34px; font-weight: 600; }
+
+// milestone track: numbered stations on a horizontal line, one column each; every station is a
+// fragment, and on its click the blue line grows from the previous station to it. A faint
+// dashed line shows the way still ahead.
+$ms-dot: 34px;
+.reveal .milestones {
+  position: relative; counter-reset: ms; margin-top: 1.8em;
+  display: grid; grid-template-columns: repeat(4, 1fr);
+}
+.reveal .milestones::before {          // the way ahead: first to last station
+  content: ""; position: absolute; top: $ms-dot * 0.5 - 1px; height: 0;
+  left: $ms-dot * 0.5; right: calc(25% - #{$ms-dot * 0.5});
+  border-top: 2px dashed $rule;
+}
+.reveal .milestones .ms {
+  position: relative; counter-increment: ms;
+  padding: $ms-dot + 34px 48px 0 0;
+}
+.reveal .milestones .ms::after {        // the station, numbered
+  content: counter(ms); position: absolute; top: 0; left: 0; z-index: 2;
+  width: $ms-dot; height: $ms-dot; border-radius: 50%; box-sizing: border-box;
+  background: $gw; color: #fff; font-size: 19px; font-weight: 650;
+  display: flex; align-items: center; justify-content: center;
+}
+.reveal .milestones .ms:not(:first-child)::before {   // the line from the previous station
+  content: ""; position: absolute; z-index: 1; top: $ms-dot * 0.5 - 2px; height: 4px;
+  // edge to edge: each station is its own layer, so the line must not run under the previous circle
+  left: calc(-100% + #{$ms-dot}); width: calc(100% - #{$ms-dot}); background: $gw;
+  transform: scaleX(0); transform-origin: left center;
+  transition: transform 0.7s ease-in-out;
+}
+.reveal .milestones .ms.visible::before { transform: scaleX(1); }
+.reveal .milestones .ms > p:first-child {
+  margin: 0 0 0.8em; font-size: 31px; line-height: 1.18; font-weight: 650; font-stretch: 88%;
+}
+.reveal .milestones .ms ul { margin: 0; padding-left: 1.05em; font-size: 24px; line-height: 1.32; color: #4f575d; }
+.reveal .milestones .ms li { margin-bottom: 0.45em; }
+@media (prefers-reduced-motion: reduce) {
+  .reveal .milestones .ms::before { transition: none; }
+}
+
+// ruled row: short statements side by side, divided by thin vertical rules, e.g. one per click;
+// each item after the first brings its own rule when it appears. .set-label names a group
+.reveal .set-label { display: block; margin: 0 0 0.45em; font-size: 22px; font-weight: 650; font-stretch: 85%; color: $muted; }
+.reveal .ruled { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; margin: 0 0 1.4em; }
+.reveal .ruled .item { padding: 0.1em 1.1em; font-size: 27px; line-height: 1.28; }
+.reveal .ruled .item:first-child { padding-left: 0; }
+.reveal .ruled .item + .item { border-left: 1px solid $rule; }
+.reveal .ruled .item p { margin: 0; }
+.reveal .ruled ~ .fragment table { font-size: 22px; width: 100%; }
+
+// a Graphviz figure on its own: centred, as large as the slide allows
+.reveal .diagram { display: flex; justify-content: center; }
+.reveal .diagram .cell-output-display { margin: 0; }
+.reveal .diagram svg { width: 100%; height: auto; max-height: 720px; }
+.reveal .diagram .cell, .reveal .diagram .cell-output-display { width: 100%; text-align: center; }
+
+// run-time slide: machine figure left, table right, conclusion below
+.reveal .runtime { display: grid; grid-template-columns: 500px 1fr; column-gap: 56px; align-items: start; }
+.reveal .runtime table { font-size: 22px; width: 100%; margin-top: 0; }
+.reveal .conclusion {
+  margin-top: 1.3em; padding: 0.15em 0 0.15em 0.7em; border-left: 4px solid $gw;
+  font-size: 28px; line-height: 1.3; max-width: 1350px;
+}
+.reveal .conclusion p { margin: 0; }
+
+// machine figure: nested boxes, workstation > virtual machine > the two models; one square per CPU
+.reveal .machine { font-size: 20px; line-height: 1.3; }
+.reveal .machine p { margin: 0; }
+.reveal .machine .m-title { font-weight: 650; font-stretch: 88%; font-size: 23px; color: $ink; }
+.reveal .machine .m-spec { color: $muted; margin-bottom: 0.7em; }
+.reveal .machine .m-legend { color: $muted; font-size: 17px; margin: 0.35em 0 0.8em; }
+.reveal .machine .host { border: 1.5px solid #9aa3a9; border-radius: 10px; padding: 16px 18px 18px; }
+.reveal .machine .vm { border: 2px solid $gw; border-radius: 8px; padding: 14px 16px 6px; background: #f6f9fb; }
+.reveal .machine .cores { display: flex; gap: 6px; flex-wrap: wrap; }
+.reveal .machine .cores > span { display: flex; gap: 2px; padding: 2px; border-radius: 3px; border: 1px solid $gw; }
+.reveal .machine .cores i { display: block; width: 14px; height: 22px; border-radius: 2px; background: $gw; }
+.reveal .machine .cores .e { border-color: #8fb3cc; }
+.reveal .machine .cores .e i { background: #8fb3cc; }
+.reveal .machine .models { display: flex; gap: 10px; }
+.reveal .machine .models span {
+  flex: 1; text-align: center; padding: 0.35em 0.4em; border-radius: 6px;
+  background: #fff; border: 1px solid #9aa3a9; font-weight: 600; font-size: 19px;
+}
+
+// case-file slide: the case files large on the left, three short points on the right
+.reveal .case-slide { display: grid; grid-template-columns: 980px 1fr; column-gap: 48px; align-items: start; margin-top: 0.4em; }
+.reveal .case-file pre { font-size: 22px; line-height: 1.5; margin: 0; }
+.reveal .case-points ul { margin: 0; padding-left: 1.05em; font-size: 28px; line-height: 1.3; }
+.reveal .case-points li { margin-bottom: 0.9em; }
+.reveal .case-points code { white-space: nowrap; }
+
+.reveal .slide-number { background: transparent; color: $muted; font-size: 16px; }
+
+// a Plotly figure (fixed 1000 px wide) on its own slide, centred and scaled up to the slide's width
+.reveal .figure-slide { display: flex; justify-content: center; }
+.reveal .figure-slide > div { zoom: 1.35; }
+.reveal .figure-slide.tall > div { zoom: 1.22; }     // the check figures: maps over a series, 600 px high
+// the checks table: six rows, the rule column wide
+.reveal .checks-table table { font-size: 21px; width: 100%; }
+.reveal .checks-table td:nth-child(n+3), .reveal .checks-table th:nth-child(n+3) { text-align: right; font-variant-numeric: tabular-nums; }

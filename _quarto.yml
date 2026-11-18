@@ -1,0 +1,12 @@
+# The deck (index.qmd) adds its own theme, soil-column.scss; custom.scss is the base it was designed on
+# (from swap-sss-runs/presentations, where the deck started)
+project:
+  type: default
+  output-dir: _site
+  render: [index.qmd]
+
+format:
+  revealjs:
+    theme: [default, custom.scss]
+    slide-number: true
+    embed-resources: true
