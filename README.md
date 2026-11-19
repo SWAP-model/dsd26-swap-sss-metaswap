@@ -34,9 +34,10 @@ on top of commit `78520b2`), copied here on 2026-11-18. Runs: `nl1518_sss_l4l` r
 
 | file | slide | notebook (in `swap-sss-runs/analysis/`) |
 |---|---|---|
-| `nl1518_heads_animation.md` | 11 | `04-2026-11-12-mz-heads-animation.py` (every third day on the map; carries plotly.js for the slides after it) |
+| `nl1518_heads_animation.md` | 11 | `04-2026-11-12-mz-heads-animation.py` (every seventh day on the map since 2026-11-19, was every third; carries plotly.js for the slides after it) |
 | `nl1518_head_diff_bands.md` | 12 | `04-2026-11-13-mz-head-diff-bands.py` |
 | `nl1518_implausible_summary.md` | 13 | `04-2026-11-13-mz-implausible-values.py` (2016–2018; 2015 is the warm-up year); the notebook writes six checks, the deck keeps the first three (storage-coefficient, ET and storage-change rows removed by hand) |
+| `nl1518_implausible_above_surface.md`, `nl1518_implausible_jump.md`, `nl1518_implausible_oscillation.md` | 14–16 | `04-2026-11-13-mz-implausible-values.py`: the maps and series of the three checks in the table |
 
 To update a figure: rerun its notebook there (`RUNS=nl1518`, the default) and copy the `.md` from
 `output/figures/` into `figures/`.

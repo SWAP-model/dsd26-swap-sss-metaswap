@@ -249,11 +249,13 @@ n_iters = 1                          # one exchange per day
 :::
 ::::
 
-## Running in the VM, getting the results out {.smaller}
+## Running in the VM, getting the results out
 
+<!-- .diagram: the graph alone, as wide as the slide (soil-column.scss) -->
+::: {.diagram}
 ```{dot}
-//| fig-width: 10.5
-//| fig-height: 3
+//| fig-width: 13
+//| fig-height: 4
 digraph {
   graph [rankdir=LR, bgcolor=transparent, fontname="Source Sans Pro", fontsize=13, nodesep=0.3, ranksep=0.45]
   node [shape=box, style="rounded,filled", fillcolor=white, color="#8a94a3", penwidth=1.2,
@@ -281,13 +283,15 @@ digraph {
   case -> share [style=invis, weight=10]
 }
 ```
+:::
 
-- Each step starts **detached** inside the VM, so a dropped ssh connection does not stop it; its log and exit code
-  are written straight to the host
-- The data package is mounted **read-only**; a run works on a copy of the built model, which is exported with the
-  results (the exact inputs of every run)
-- The VM copy of a run is deleted only once every exported file has the same size on the host
-- A watchdog on the host records the VM's state if it hangs (it did four times in long runs, before November)
+::: {.notes}
+Each step starts detached inside the VM, so a dropped ssh connection does not stop it; its log and exit code are
+written straight to the host. The data package is mounted read-only; a run works on a copy of the built model, which
+is exported with the results (the exact inputs of every run). The VM copy of a run is deleted only once every exported
+file has the same size on the host. A watchdog on the host records the VM's state if it hangs (it did four times in
+long runs, before November).
+:::
 
 ## Variables used in the comparison {.smaller}
 
@@ -310,14 +314,14 @@ digraph {
 
 ## Daily heads, 2015–2018: together at shallow groundwater, apart where it is deep
 
-<!-- analysis/04-2026-11-12-mz-heads-animation.py (RUNS=nl1518): every third day on the map, the series daily;
+<!-- analysis/04-2026-11-12-mz-heads-animation.py (RUNS=nl1518): every seventh day on the map, the series daily;
      each location is the cell nearest its region's median difference -->
 ::: {.figure-slide}
 {{< include figures/nl1518_heads_animation.md >}}
 :::
 
 ::: {.notes}
-Blue: SWAP-SSS higher. Press play: the map runs every third day of 2015–2018. Where groundwater is within a few
+Blue: SWAP-SSS higher. Press play: the map steps a week at a time through 2015–2018. Where groundwater is within a few
 metres the two heads follow each other day by day (Leerdam, Zeeland, Peel, Drenthe, Groningen). Under the Veluwe,
 20 m deep, SWAP-SSS rises while MetaSWAP falls: 2 m apart on average.
 :::
@@ -353,6 +357,35 @@ daily changes of at least 10 cm, up and down in turn, as when the daily exchange
 Three further checks were run and left out here: the storage coefficient (its flags are a coefficient of 1 on days
 with water above the surface, which is correct for open water), ET outside 0 to potential (never flagged) and a
 50 mm a year column storage change (flags real wet and dry years in both).
+:::
+
+## Ponding for over a week: 22 % of SWAP-SSS columns, almost none in MetaSWAP
+
+::: {.figure-slide .tall}
+{{< include figures/nl1518_implausible_above_surface.md >}}
+:::
+
+::: {.notes}
+SWAP-SSS's columns give no surface runoff in these runs; MetaSWAP's do (qrun). Water that cannot infiltrate may
+stay as a head above the surface in SWAP-SSS: a likely cause, not yet checked column by column. Most in the western
+polders, the north and the south-east; the share peaks after wet spells.
+:::
+
+## Head jumps over 0.5 m a day: same days in both, twice the columns in SWAP-SSS
+
+::: {.figure-slide .tall}
+{{< include figures/nl1518_implausible_jump.md >}}
+:::
+
+## Alternating heads: seven times as many column-days in SWAP-SSS
+
+::: {.figure-slide .tall}
+{{< include figures/nl1518_implausible_oscillation.md >}}
+:::
+
+::: {.notes}
+Four or more daily changes of at least 10 cm, up and down in turn, as when the daily exchange with MODFLOW does not
+settle. 1.2 % of SWAP-SSS column-days against 0.16 % in MetaSWAP; the extra ones mostly in the south and the east.
 :::
 
 ## Conclusions
