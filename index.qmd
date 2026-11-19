@@ -314,14 +314,14 @@ long runs, before November).
 
 ## Daily heads, 2015–2018: together at shallow groundwater, apart where it is deep
 
-<!-- analysis/04-2026-11-12-mz-heads-animation.py (RUNS=nl1518): every seventh day on the map, the series daily;
+<!-- analysis/04-2026-11-12-mz-heads-animation.py (RUNS=nl1518): every third day on the map, play runs 15 s, the series daily;
      each location is the cell nearest its region's median difference -->
 ::: {.figure-slide}
 {{< include figures/nl1518_heads_animation.md >}}
 :::
 
 ::: {.notes}
-Blue: SWAP-SSS higher. Press play: the map steps a week at a time through 2015–2018. Where groundwater is within a few
+Blue: SWAP-SSS higher. Press play: the map runs every third day of 2015–2018 in 15 seconds. Where groundwater is within a few
 metres the two heads follow each other day by day (Leerdam, Zeeland, Peel, Drenthe, Groningen). Under the Veluwe,
 20 m deep, SWAP-SSS rises while MetaSWAP falls: 2 m apart on average.
 :::
